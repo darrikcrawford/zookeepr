@@ -1,20 +1,17 @@
-
-const { animals } = require('./data/animals.json');
-const express = require('express');
-const PORT = process.env.PORT || 3001;
-const app = express();
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
+const { animals } = require('./data/animals');
 
+const PORT = process.env.PORT || 3001;
+const app = express();
 
+// make public folder into static resources
+app.use(express.static('public'));
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
-
-app.use(express.static('public'));
-
-
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -30,13 +27,6 @@ function filterByQuery(query, animalsArray) {
     }
     // Loop through each trait in the personalityTraits array:
     personalityTraitsArray.forEach(trait => {
-      // Check the trait against each animal in the filteredResults array.
-      // Remember, it is initially a copy of the animalsArray,
-      // but here we're updating it for each trait in the .forEach() loop.
-      // For each trait being targeted by the filter, the filteredResults
-      // array will then contain only the entries that contain the trait,
-      // so at the end we'll have an array of animals that have every one 
-      // of the traits when the .forEach() loop is finished.
       filteredResults = filteredResults.filter(
         animal => animal.personalityTraits.indexOf(trait) !== -1
       );
@@ -117,6 +107,18 @@ app.post('/api/animals', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
